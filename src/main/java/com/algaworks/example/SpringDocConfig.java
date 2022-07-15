@@ -42,8 +42,8 @@ public class SpringDocConfig {
                     .version("v1")
                     .license(new License().name("Apache 2.0").url("http://springdoc.org")))
             .components(new Components()
-                    .schemas(criarSchemasPadrao())
-                    .responses(criarResponsesPadrao())
+                    .schemas(createSchemas())
+                    .responses(createDefaultResponses())
             );
     }
 
@@ -54,10 +54,10 @@ public class SpringDocConfig {
                     .forEach(pathItem -> pathItem.readOperationsMap().forEach((httpMethod, operation) -> {
                         Consumer<ApiResponses> atribuirRespostasPadrao =
                                 switch (httpMethod) {
-                                    case GET -> criarRespostasPadraoGet();
-                                    case POST -> criarRespostasPadraoPost();
-                                    case PUT -> criarRespostasPadraoPut();
-                                    case DELETE -> criarRespostasPadraoDelete();
+                                    case GET -> createDefaultGetResponses();
+                                    case POST -> createDefaultPostResponses();
+                                    case PUT -> createDefaultPutResponses();
+                                    case DELETE -> createDefaultDeleteResponses();
                                     default -> responses -> {};
                                 };
                         atribuirRespostasPadrao.accept(operation.getResponses());
@@ -65,7 +65,7 @@ public class SpringDocConfig {
         };
     }
 
-    private Map<String, Schema> criarSchemasPadrao() {
+    private Map<String, Schema> createSchemas() {
         final Map<String, Schema> schemas = new LinkedHashMap<>();
 
         Map<String, Schema> problemSchema = ModelConverters.getInstance().read(Problem.class);
@@ -77,7 +77,7 @@ public class SpringDocConfig {
         return schemas;
     }
 
-    private Map<String, ApiResponse> criarResponsesPadrao() {
+    private Map<String, ApiResponse> createDefaultResponses() {
         final Map<String, ApiResponse> responses = new LinkedHashMap<>();
 
         Content problemaContent = new Content()
@@ -101,7 +101,7 @@ public class SpringDocConfig {
         return responses;
     }
 
-    private Consumer<ApiResponses> criarRespostasPadraoGet() {
+    private Consumer<ApiResponses> createDefaultGetResponses() {
         return responses -> {
             responses.addApiResponse(NOT_FOUND_VALUE, new ApiResponse().$ref(NOT_FOUND_RESPONSE));
             responses.addApiResponse(NOT_ACCEPTABLE_VALUE, new ApiResponse().$ref(NOT_ACCEPTABLE_RESPONSE));
@@ -109,7 +109,7 @@ public class SpringDocConfig {
         };
     }
 
-    private Consumer<ApiResponses> criarRespostasPadraoPut() {
+    private Consumer<ApiResponses> createDefaultPutResponses() {
         return responses -> {
             responses.addApiResponse(BAD_REQUEST_VALUE, new ApiResponse().$ref(BAD_REQUEST_RESPONSE));
             responses.addApiResponse(NOT_FOUND_VALUE, new ApiResponse().$ref(NOT_FOUND_RESPONSE));
@@ -118,7 +118,7 @@ public class SpringDocConfig {
         };
     }
 
-    private Consumer<ApiResponses> criarRespostasPadraoPost() {
+    private Consumer<ApiResponses> createDefaultPostResponses() {
         return responses -> {
             responses.addApiResponse(BAD_REQUEST_VALUE, new ApiResponse().$ref(BAD_REQUEST_RESPONSE));
             responses.addApiResponse(NOT_FOUND_VALUE, new ApiResponse().$ref(NOT_FOUND_RESPONSE));
@@ -126,7 +126,7 @@ public class SpringDocConfig {
         };
     }
 
-    private Consumer<ApiResponses> criarRespostasPadraoDelete() {
+    private Consumer<ApiResponses> createDefaultDeleteResponses() {
         return responses -> {
             responses.addApiResponse(NOT_FOUND_VALUE, new ApiResponse().$ref(NOT_FOUND_RESPONSE));
             responses.addApiResponse(INTERNAL_SERVER_ERROR_VALUE, new ApiResponse().$ref(INTERNAL_SERVER_ERROR_RESPONSE));
