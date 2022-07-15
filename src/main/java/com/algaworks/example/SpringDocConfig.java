@@ -52,7 +52,7 @@ public class SpringDocConfig {
         return openApi -> {
             openApi.getPaths().values()
                     .forEach(pathItem -> pathItem.readOperationsMap().forEach((httpMethod, operation) -> {
-                        Consumer<ApiResponses> atribuirRespostasPadrao =
+                        Consumer<ApiResponses> responsesConsumer =
                                 switch (httpMethod) {
                                     case GET -> createDefaultGetResponses();
                                     case POST -> createDefaultPostResponses();
@@ -60,7 +60,7 @@ public class SpringDocConfig {
                                     case DELETE -> createDefaultDeleteResponses();
                                     default -> responses -> {};
                                 };
-                        atribuirRespostasPadrao.accept(operation.getResponses());
+                        responsesConsumer.accept(operation.getResponses());
                     }));
         };
     }
